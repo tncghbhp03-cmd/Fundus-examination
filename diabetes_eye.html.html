@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臺南市糖尿病眼底檢查醫療院所</title>
+
+<style>
+body {
+    font-family: "Microsoft JhengHei", sans-serif;
+    margin: 0;
+    background-color: #f3f6fb;
+    color: #333;
+}
+
+/* 上方 */
+.header {
+    background-color: #14283c;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+/* 搜尋 */
+.search-box input {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    width: 240px;
+}
+
+/* 內容 */
+.section {
+    padding: 20px;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    margin: 0 0 5px 0;
+}
+
+/* 按鈕 */
+.btn {
+    display: inline-block;
+    padding: 6px 10px;
+    margin-top: 8px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+}
+
+.map-btn {
+    background-color: #1fa2ff;
+}
+
+.phone-btn {
+    background-color: #18a572;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 搜尋區 -->
+<div style="
+background:white;
+padding:30px 20px;
+text-align:center;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+">
+
+    <h2 style="margin-bottom:5px;">
+        臺南市115年度糖尿病患眼底檢查醫療院所
+    </h2>
+
+    <p style="color:#888; margin-bottom:20px;">
+        更新日期：115年2月11日
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+
+        <select id="districtSelect" onchange="filterDistrict()"
+        style="padding:10px; border-radius:6px; border:1px solid #ccc; min-width:150px;">
+            <option value="">所有區域</option>
+            <option value="新營區">新營區</option>
+            <option value="鹽水區">鹽水區</option>
+            <option value="白河區">白河區</option>
+            <option value="麻豆區">麻豆區</option>
+            <option value="佳里區">佳里區</option>
+            <option value="新化區">新化區</option>
+            <option value="善化區">善化區</option>
+            <option value="學甲區">學甲區</option>
+            <option value="柳營區">柳營區</option>
+            <option value="後壁區">後壁區</option>
+            <option value="下營區">下營區</option>
+            <option value="西港區">西港區</option>
+            <option value="將軍區">將軍區</option>
+            <option value="新市區">新市區</option>
+            <option value="玉井區">玉井區</option>
+            <option value="仁德區">仁德區</option>
+            <option value="歸仁區">歸仁區</option>
+            <option value="關廟區">關廟區</option>
+            <option value="永康區">永康區</option>
+            <option value="東區">東區</option>
+            <option value="南區">南區</option>
+            <option value="北區">北區</option>
+            <option value="中西區">中西區</option>
+            <option value="安南區">安南區</option>
+            <option value="安平區">安平區</option>
+        </select>
+
+        <input type="text" id="searchInput"
+        placeholder="搜尋院所名稱..."
+        onkeyup="searchClinic()"
+        style="
+        padding:10px;
+        border-radius:6px;
+        border:1px solid #ccc;
+        min-width:250px;
+        ">
+
+    </div>
+
+</div>
+
+    
+<div class="section">
+    <p id="totalCount" style="color:#ccc; margin-bottom:10px;"></p>
+    <div class="card-container" id="clinicList"></div>
+</div>
+
+<script>
+
+const clinics = [
+
+/* 新營區 */
+{district:"新營區", name:"張如輝眼科診所", address:"臺南市新營區大同路8-2號", method:"免散瞳／散瞳"},
+{district:"新營區", name:"衛生福利部新營醫院", address:"臺南市新營區信義街73號", method:"免散瞳／散瞳"},
+{district:"新營區", name:"晶明診所", address:"臺南市新營區民治路8號之8", method:"散瞳"},
+{district:"新營區", name:"許力元眼科診所", address:"臺南市新營區中正路86-1號", method:"免散瞳／散瞳"},
+{district:"新營區", name:"營新醫院", address:"臺南市新營區隋唐街228號", method:"免散瞳／散瞳"},
+{district:"新營區", name:"郭昇峯內科診所", address:"臺南市新營區民治路322號", method:"免散瞳"},
+{district:"新營區", name:"陳明源眼科診所", address:"臺南市新營區民權路56-1號", method:"散瞳"},
+{district:"新營區", name:"江金旺眼科診所", address:"臺南市新營區中山路76號", method:"免散瞳／散瞳"},
+
+/* 鹽水、白河 */
+{district:"鹽水區", name:"建明眼科診所", address:"臺南市鹽水區武廟路63-2號", method:"散瞳"},
+{district:"白河區", name:"吳明強診所", address:"臺南市白河區國泰路111號", method:"免散瞳"},
+{district:"白河區", name:"白河林眼科診所", address:"臺南市白河區中山路2-53號", method:"免散瞳／散瞳"},
+
+/* 柳營、後壁 */
+{district:"柳營區", name:"柳營奇美醫院", address:"臺南市柳營區太康里201號", method:"免散瞳／散瞳"},
+{district:"柳營區", name:"蔡瑞頒診所", address:"臺南市柳營區成功街210號", method:"免散瞳"},
+{district:"後壁區", name:"德昌診所", address:"臺南市後壁區菁寮200號", method:"免散瞳"},
+
+/* 麻豆 */
+{district:"麻豆區", name:"麻豆新樓醫院", address:"臺南市麻豆區麻佳路一段207號", method:"免散瞳／散瞳"},
+{district:"麻豆區", name:"全視界眼科診所", address:"臺南市麻豆區興中路171-9號", method:"散瞳"},
+{district:"麻豆區", name:"林眼科診所", address:"臺南市麻豆區忠孝路23-26號", method:"散瞳"},
+
+/* 下營 */
+{district:"下營區", name:"晨祐診所", address:"臺南市下營區東興二街36號", method:"免散瞳"},
+
+/* 佳里 */
+{district:"佳里區", name:"佳里奇美醫院", address:"臺南市佳里區佳里興606號", method:"免散瞳"},
+{district:"佳里區", name:"莊嘉斐眼科診所", address:"臺南市佳里區文化路235號", method:"散瞳"},
+{district:"佳里區", name:"謝樂偉眼科診所", address:"臺南市佳里區文化路205號", method:"免散瞳／散瞳"},
+{district:"佳里區", name:"信明眼科診所", address:"臺南市佳里區光復路391號", method:"免散瞳／散瞳"},
+{district:"佳里區", name:"顏忠信眼科診所", address:"臺南市佳里區中山路189號", method:"免散瞳／散瞳"},
+{district:"佳里區", name:"黃清相診所", address:"臺南市佳里區延平路72號", method:"免散瞳"},
+
+/* 學甲～將軍 */
+{district:"學甲區", name:"侯瑞合診所", address:"臺南市學甲區華宗路365號", method:"免散瞳"},
+{district:"西港區", name:"健安診所", address:"臺南市西港區中山路325號", method:"免散瞳"},
+{district:"將軍區", name:"將軍區衛生所", address:"臺南市將軍區忠興185-6號", method:"免散瞳"},
+
+/* 新化 */
+{district:"新化區", name:"臺南醫院新化分院", address:"臺南市新化區牧場72號", method:"免散瞳／散瞳"},
+{district:"新化區", name:"陳相國聯合診所", address:"臺南市新化區中山路489號", method:"免散瞳"},
+{district:"新化區", name:"新化眼科診所", address:"臺南市新化區中正路406號", method:"散瞳"},
+
+/* 善化～玉井 */
+{district:"善化區", name:"誼仁診所", address:"臺南市善化區中正路387號", method:"免散瞳"},
+{district:"新市區", name:"方振崑眼科診所", address:"臺南市新市區中正路319-2號", method:"免散瞳／散瞳"},
+{district:"玉井區", name:"双美診所", address:"臺南市玉井區太子街39巷8號", method:"免散瞳"},
+{district:"玉井區", name:"明美眼科診所", address:"臺南市玉井區中華路186號", method:"免散瞳／散瞳"},
+
+/* 仁德～關廟 */
+{district:"仁德區", name:"協和家醫科診所", address:"臺南市仁德區中正路三段79號", method:"免散瞳"},
+{district:"歸仁區", name:"華國泰眼科診所", address:"臺南市歸仁區中山路二段213號", method:"免散瞳／散瞳"},
+{district:"歸仁區", name:"邱眼科診所", address:"臺南市歸仁區中山路一段328號", method:"免散瞳／散瞳"},
+{district:"關廟區", name:"陳育鴻眼科診所", address:"臺南市關廟區中正路1017號", method:"散瞳"},
+
+/* 永康區 */
+{district:"永康區", name:"大橋誠康診所", address:"臺南市永康區大橋二街180號", method:"免散瞳"},
+{district:"永康區", name:"亮心診所", address:"臺南市永康區振興路50號", method:"免散瞳"},
+{district:"永康區", name:"劉眼科診所", address:"臺南市永康區中華路142號", method:"免散瞳"},
+{district:"永康區", name:"真大眼科診所", address:"臺南市永康區大灣路742號", method:"散瞳"},
+{district:"永康區", name:"霖陽眼科診所", address:"臺南市永康區中華路21號", method:"免散瞳／散瞳"},
+{district:"永康區", name:"蔡眼科診所", address:"臺南市永康區忠孝路392號", method:"散瞳"},
+{district:"永康區", name:"楊純宜內科診所", address:"臺南市永康區東橋五路120號", method:"免散瞳"},
+{district:"永康區", name:"京城眼科診所", address:"臺南市永康區中山南路420號", method:"免散瞳／散瞳"},
+{district:"永康區", name:"周劍文診所", address:"臺南市永康區小東路423巷2號", method:"免散瞳"},
+{district:"永康區", name:"成美診所", address:"臺南市永康區中山南路166號", method:"免散瞳"},
+
+/* 東區 */
+{district:"東區", name:"臺南市立醫院", address:"臺南市東區崇德路670號", method:"免散瞳／散瞳"},
+{district:"東區", name:"臺南新樓醫院", address:"臺南市東區東門路一段57號", method:"免散瞳"},
+{district:"東區", name:"信合美眼科診所", address:"臺南市東區林森路一段379號", method:"散瞳"},
+{district:"東區", name:"林一宏眼科診所", address:"臺南市東區裕農路583號", method:"散瞳"},
+{district:"東區", name:"張明木眼科診所", address:"臺南市東區東門路二段372號", method:"散瞳"},
+{district:"東區", name:"慶明眼科診所", address:"臺南市東區林森路一段377號", method:"免散瞳／散瞳"},
+{district:"東區", name:"台南澄清眼科診所", address:"臺南市東區長榮路二段300號1-3F", method:"散瞳"},
+{district:"東區", name:"王孟文眼科診所", address:"臺南市東區崇明路298號", method:"散瞳"},
+{district:"東區", name:"冠安內科診所", address:"臺南市東區長榮路一段182號", method:"免散瞳"},
+{district:"東區", name:"尚儒大學眼科診所", address:"臺南市東區長榮路二段75號", method:"免散瞳／散瞳"},
+{district:"東區", name:"國光眼科診所", address:"臺南市東區中華東路二段335號", method:"免散瞳／散瞳"},
+{district:"東區", name:"祐明眼科診所", address:"臺南市東區崇明路503號", method:"散瞳"},
+{district:"東區", name:"德安眼科崇善診所", address:"臺南市東區崇善路476號", method:"散瞳"},
+{district:"東區", name:"澄心診所", address:"臺南市東區裕農路972號", method:"免散瞳"},
+{district:"東區", name:"綻亮眼科診所", address:"臺南市東區東門路二段385號", method:"免散瞳／散瞳"},
+
+/* 南區 */
+{district:"南區", name:"謝眼科診所", address:"臺南市南區夏林路95號", method:"免散瞳／散瞳"},
+{district:"南區", name:"新光眼科診所", address:"臺南市南區金華路二段370號", method:"散瞳"},
+{district:"南區", name:"晉慶眼科診所", address:"臺南市南區新興路463號", method:"免散瞳／散瞳"},
+{district:"南區", name:"林黑潮診所", address:"臺南市南區金華路一段377號", method:"免散瞳"},
+
+/* 北區 */
+{district:"北區", name:"陳香吟診所", address:"臺南市北區開元路360號", method:"免散瞳／散瞳"},
+{district:"北區", name:"臨安眼科診所", address:"臺南市北區臨安路二段137號", method:"免散瞳／散瞳"},
+{district:"北區", name:"國立成功大學醫院", address:"臺南市北區勝利路138號", method:"免散瞳"},
+{district:"北區", name:"新世紀眼科診所", address:"臺南市北區成功路442號", method:"免散瞳／散瞳"},
+{district:"北區", name:"現代眼科診所", address:"臺南市北區公園路375號", method:"免散瞳／散瞳"},
+{district:"北區", name:"陳冠文內科診所", address:"臺南市北區小東路171號", method:"免散瞳"},
+{district:"北區", name:"精準眼科診所", address:"臺南市北區北安路一段108號", method:"免散瞳／散瞳"},
+{district:"北區", name:"曾順輝眼科診所", address:"臺南市北區小東路167號", method:"免散瞳／散瞳"},
+
+/* 安南區 */
+{district:"安南區", name:"睛明眼科診所", address:"臺南市安南區安和路三段131號", method:"免散瞳／散瞳"},
+{district:"安南區", name:"晴天眼科診所", address:"臺南市安南區海佃路二段448號", method:"免散瞳／散瞳"},
+{district:"安南區", name:"博視眼科診所", address:"臺南市安南區安和路一段168號", method:"免散瞳／散瞳"},
+{district:"安南區", name:"真光眼科診所", address:"臺南市安南區安和路一段40號", method:"免散瞳／散瞳"},
+{district:"安南區", name:"林昆正眼科診所", address:"臺南市安南區海佃路一段198號", method:"免散瞳／散瞳"},
+{district:"安南區", name:"安南醫院", address:"臺南市安南區長和路二段66號", method:"免散瞳／散瞳"},
+
+/* 安平區 */
+{district:"安平區", name:"解像力眼科診所", address:"臺南市安平區府前四街43號", method:"散瞳"},
+{district:"安平區", name:"德安眼科診所", address:"臺南市安平區華平路632號", method:"散瞳"},
+
+/* 中西區 */
+{district:"中西區", name:"台南諾貝爾眼科診所", address:"臺南市中西區中正路313號", method:"散瞳"},
+{district:"中西區", name:"青年眼科診所", address:"臺南市中西區青年路108號", method:"免散瞳／散瞳"},
+{district:"中西區", name:"衛生福利部臺南醫院", address:"臺南市中西區中山路125號", method:"免散瞳／散瞳"},
+{district:"中西區", name:"呂忠苓眼科診所", address:"臺南市中西區成功路181號", method:"免散瞳／散瞳"},
+{district:"中西區", name:"郭綜合醫院", address:"臺南市中西區民生路二段18號", method:"免散瞳／散瞳"},
+{district:"中西區", name:"莊瑞榮眼科診所", address:"臺南市中西區永福路二段46號", method:"散瞳"}
+
+];
+
+
+
+/* ===== 顯示卡片 ===== */
+function renderClinics(list){
+
+    document.getElementById("totalCount").innerText =
+    "目前共有 " + list.length + " 家合作院所";
+
+    const container = document.getElementById("clinicList");
+    container.innerHTML = "";
+
+    // 依行政區分組
+    const groups = {};
+    list.forEach(c => {
+        if(!groups[c.district]){
+            groups[c.district] = [];
+        }
+        groups[c.district].push(c);
+    });
+
+    // 逐區顯示
+    Object.keys(groups).sort().forEach(district => {
+
+        // 外層區塊（關鍵：讓分隔線滿版）
+        const section = document.createElement("div");
+        section.style.width = "100%";
+        section.style.marginTop = "30px";
+
+        // 行政區標題
+        const title = document.createElement("h2");
+        title.innerText = district;
+        title.style.color = "#1fa2ff";
+        title.style.marginBottom = "5px";
+        section.appendChild(title);
+
+        // 分隔線（整行）
+        const hr = document.createElement("div");
+        hr.style.height = "2px";
+        hr.style.background = "#3aa6b9";
+        hr.style.width = "100%";
+        hr.style.marginBottom = "15px";
+        section.appendChild(hr);
+
+        // 卡片容器
+        const groupDiv = document.createElement("div");
+        groupDiv.style.display = "flex";
+        groupDiv.style.flexWrap = "wrap";
+        groupDiv.style.gap = "15px";
+
+        groups[district].forEach(c => {
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <h3>${c.name}</h3>
+                <p>${c.district}</p>
+                <p>檢查方式：${c.method}</p>
+
+                <a class="btn map-btn"
+                href="https://www.google.com/maps/search/?api=1&query=${c.name} ${c.address}"
+                target="_blank">地圖</a>
+
+                <a class="btn phone-btn"
+                href="https://www.google.com/search?q=${c.name} 電話"
+                target="_blank">電話</a>
+            `;
+
+            groupDiv.appendChild(card);
+        });
+
+        section.appendChild(groupDiv);
+        container.appendChild(section);
+    });
+}
+
+
+
+/* ===== 搜尋功能 ===== */
+function searchClinic(){
+    const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+    const filtered = clinics.filter(c =>
+        c.name.toLowerCase().includes(keyword) ||
+        c.district.toLowerCase().includes(keyword)
+    );
+
+    renderClinics(filtered);
+}
+
+
+/* 初始載入 */
+renderClinics(clinics);
+
+</script>
+
+<!-- 底部返回區 -->
+<div style="
+text-align:center;
+margin:50px 0 40px 0;
+">
+
+    <a href="eye115.html" style="
+        background:#1fa2ff;
+        color:white;
+        padding:12px 30px;
+        border-radius:8px;
+        text-decoration:none;
+        font-size:16px;
+        font-weight:500;
+        display:inline-block;
+        box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    ">
+        返回說明頁
+    </a>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
