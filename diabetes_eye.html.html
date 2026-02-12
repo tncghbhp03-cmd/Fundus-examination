@@ -131,7 +131,7 @@ box-shadow:0 2px 6px rgba(0,0,0,0.05);
 
         <input type="text" id="searchInput"
         placeholder="搜尋院所名稱..."
-        oninput="filterClinics()"
+        oninput="searchClinic()"
         style="
         padding:10px;
         border-radius:6px;
@@ -368,6 +368,19 @@ function searchClinic(){
     renderClinics(filtered);
 }
 
+/* ===== 行政區篩選 ===== */
+function filterDistrict(){
+    const district = document.getElementById("districtSelect").value;
+
+    if(district === ""){
+        renderClinics(clinics);
+        return;
+    }
+
+    const filtered = clinics.filter(c => c.district === district);
+    renderClinics(filtered);
+}
+
 
 /* 初始載入 */
 renderClinics(clinics);
@@ -398,6 +411,7 @@ margin:50px 0 40px 0;
 
 </body>
 </html>
+
 
 
 
