@@ -371,29 +371,7 @@ function searchClinic(){
 
 /* 初始載入 */
 renderClinics(clinics);
-
-<script>
-function filterClinics() {
-    const keyword = document.getElementById("searchInput").value.toLowerCase();
-    const district = document.getElementById("districtFilter").value;
-
-    const cards = document.querySelectorAll(".clinic-card");
-
-    cards.forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const area = card.dataset.district;
-
-        const matchName = name.includes(keyword);
-        const matchDistrict = district === "" || area === district;
-
-        if (matchName && matchDistrict) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-}
-    
+  
 </script>
 
 <!-- 底部返回區 -->
@@ -420,6 +398,7 @@ margin:50px 0 40px 0;
 
 </body>
 </html>
+
 
 
 
